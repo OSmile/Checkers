@@ -4,90 +4,90 @@ import java.io.Serializable;
 
 
 public class Coordinate implements Serializable {
-    private int c;
+    private int coordForChecker;
 
-    public Coordinate(int var1) {
-        this.c = var1;
-    }
-
-    Coordinate() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Coordinate(int coordinate) {
+        coordForChecker = coordinate;
     }
 
     public int get() {
-        return this.c;
+        return coordForChecker;
     }
 
-    public boolean equals(Coordinate var1) {
-        return this.c == var1.get();
+    public boolean equals(Coordinate coord) {
+        return coordForChecker == coord.get();
     }
 
+
+    // Returns the row (0-7) of the coordinate (1-32)
     public int row() {
         int row;
-        row = (int) Math.floor(c / 4.0);
-        if (c % 4 == 0) {
+        row = (int) Math.floor(coordForChecker / 4.0);
+        if (coordForChecker % 4 == 0) {
             return row - 1;
         } else {
             return row;
         }
     }
 
+    // Returns the column (0-7) of the coordinate (1-32)
     public int column() {
         if (row() % 2 == 0) {
-            return (((c - (row() * 4)) * 2) - 1);
+            return (((coordForChecker - (row() * 4)) * 2) - 1);
         } else {
-            return (((c - (row() * 4)) * 2) - 2);
+            return (((coordForChecker - (row() * 4)) * 2) - 2);
         }
     }
 
     public String toString() {
-        return "" + c;
+        return "" + coordForChecker;
     }
 
+
+    // Returns the coordinate of the field that is
+    // one field above and one field to the left of previous state
     public Coordinate upLeftMove() {
-        return this.row() % 2 == 0 ? new Coordinate(this.c - 5) : new Coordinate(this.c - 4);
-    }
-
-    public Coordinate upRightMove() {
-        //System.out.println("Checking if it is Up Right Move");
-
-        if (row() % 2 == 0) {
-            return new Coordinate(c - 4);
-        } else {
-            return new Coordinate(c - 3);
-        }
+        return this.row() % 2 == 0 ? new Coordinate(this.coordForChecker - 5) : new Coordinate(this.coordForChecker - 4);
     }
 
     public Coordinate downLeftMove() {
         if (row() % 2 == 0) {
-            return new Coordinate(c + 3);
+            return new Coordinate(coordForChecker + 3);
         } else {
-            return new Coordinate(c + 4);
+            return new Coordinate(coordForChecker + 4);
+        }
+    }
+
+    public Coordinate upRightMove() {
+        //System.out.println("Check");
+
+        if (row() % 2 == 0) {
+            return new Coordinate(coordForChecker - 4);
+        } else {
+            return new Coordinate(coordForChecker - 3);
         }
     }
 
     public Coordinate downRightMove() {
         if (row() % 2 == 0) {
-            return new Coordinate(c + 4);
+            return new Coordinate(coordForChecker + 4);
         } else {
-            return new Coordinate(c + 5);
+            return new Coordinate(coordForChecker + 5);
         }
     }
 
     public Coordinate upLeftJump() {
-        return new Coordinate(this.c - 9);
+        return new Coordinate(coordForChecker - 9);
+    }
+    public Coordinate downLeftJump() {
+        return new Coordinate(coordForChecker + 7);
     }
 
     public Coordinate upRightJump() {
-        return new Coordinate(this.c - 7);
+        return new Coordinate(coordForChecker - 7);
     }
-
-    public Coordinate downLeftJump() {
-        return new Coordinate(this.c + 7);
-    }
-
     public Coordinate downRightJump() {
-        return new Coordinate(this.c + 9);
+        return new Coordinate(coordForChecker + 9);
     }
 }
 

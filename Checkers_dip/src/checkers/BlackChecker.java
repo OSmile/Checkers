@@ -1,23 +1,21 @@
 package checkers;
 
-import javax.swing.ImageIcon;
-
 public class BlackChecker extends CheckerPosition {
-    public BlackChecker(Coordinate var1) {
-        this.checkerState = new NormalStateBlack();
-        this.position = var1;
+    public BlackChecker(Coordinate coordinate) {
+        this.checkerState = new BlackState();
+        this.position = coordinate;
         this.value = -2;
-        this.stringRep = "X";
+        this.posToString = "X";
     }
 
     public int getColor() {
-        return 1;
+        return BLACK;
     }
 
     public void makeKing() {
         this.checkerState = new KingState();
         this.value = -3;
-        this.stringRep = "B";
+        this.posToString = "B";
     }
 
     public boolean isKing() {
@@ -29,16 +27,12 @@ public class BlackChecker extends CheckerPosition {
     }
 
     public CheckerPosition copy() {
-        BlackChecker var1 = new BlackChecker(this.position);
+        BlackChecker newBlackChecker = new BlackChecker(this.position);
         if (this.value == -3) {
-            var1.makeKing();
+            newBlackChecker.makeKing();
         }
 
-        return var1;
-    }
-
-    public ImageIcon getIcon() {
-        return null;
+        return newBlackChecker;
     }
 }
 

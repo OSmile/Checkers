@@ -1,9 +1,10 @@
 package checkers;
 
 public class MoveJump extends Move {
-    public MoveJump(CheckerPosition var1, Coordinate var2) {
-        this.checker = var1;
-        this.destination = var2;
+
+    public MoveJump(CheckerPosition checker, Coordinate destination) {
+        this.checker = checker;
+        this.destination = destination;
     }
 
     public boolean isJump() {
@@ -11,31 +12,40 @@ public class MoveJump extends Move {
     }
 
     public Move copy() {
-        return new MoveJump(this.checker.copy(), this.destination);
+        return new MoveJump(checker.copy(), destination);
     }
 
-    public Move copy(Board var1) {
-        return new MoveJump(var1.getChecker(this.checker.getPosition()), this.destination);
+    // Return a copy of this move from the board
+    public Move copy(Board board) {
+        return new MoveJump(board.getChecker(checker.getPosition()), destination);
     }
 
+    // Return the coordinate of the captured checker
     public Coordinate capturedCoordinate() {
-        if (this.checker.getPosition().row() - this.destination.row() == 2) {
-            return this.checker.getPosition().column() - this.destination.column() == 2 ? this.checker.getPosition().upLeftMove() : this.checker.getPosition().upRightMove();
-        } else {
-            return this.checker.getPosition().column() - this.destination.column() == 2 ? this.checker.getPosition().downLeftMove() : this.checker.getPosition().downRightMove();
+        if (checker.getPosition().row() - destination.row() == 2) { // Up
+            if (checker.getPosition().column() - destination.column() == 2) // Up, left
+                return checker.getPosition().upLeftMove();
+            else
+                return checker.getPosition().upRightMove();
+        }
+        else { // Down
+            if (checker.getPosition().column() - destination.column() == 2) // Down, left
+                return checker.getPosition().downLeftMove();
+            else
+                return checker.getPosition().downRightMove();
         }
     }
 
     public String toString() {
-        String var1 = "";
-        if (this.checker.getColor() == 1) {
-            var1 = "Black-J:";
+        String logging;
+        if (checker.getColor() == 1) {
+            logging = "Black is Jump:";
         } else {
-            var1 = "White-J:";
+            logging = "White is Jump:";
         }
 
-        var1 = var1 + "(" + this.checker.getPosition() + "-" + this.destination + ")";
-        return var1;
+        logging = logging + "(" + checker.getPosition() + " " + destination + ")";
+        return logging;
     }
 }
 

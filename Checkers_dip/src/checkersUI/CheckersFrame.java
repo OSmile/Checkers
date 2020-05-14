@@ -1,91 +1,43 @@
 package checkersUI;
 
-import checkers.Board;
-import checkers.CheckerPosition;
-import checkers.Coordinate;
-import checkers.GameSearch;
-import checkers.Move;
-import checkers.MoveIter;
-import checkers.MoveJump;
-import checkers.MoveList;
-import checkers.MoveNormal;
-import java.applet.Applet;
-import java.applet.AudioClip;
-import java.awt.Component;
-import java.awt.Dimension;
+import checkers.*;
+
 import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class CheckersFrame extends JFrame implements MouseListener, MouseMotionListener, KeyListener {
     CheckersField pan;
-    private CheckerPosition multipleJumpsChecker = null;
     ArrayList<Board> boardHistory = new ArrayList();
     private int clickedHere = 0;
-    int FromPawnIndex = 0;
-    int ToPawnIndex = 0;
-    private static final int FROM = 1;
-    private static final int TO = 2;
-    private static final int FROM_MULTIPLE = 3;
-    private static final int TO_MULTIPLE = 4;
-    private static final int COMPUTER_THINKS = 5;
-    private static final int NOT_STARTED = 6;
+    int fromPawnIndex = 0;
+    int toPawnIndex = 0;
+
     private int userColor = 2;
-    private int computerColor = 1;
-    private Coordinate from;
     private int thinkDepth = 2;
     private boolean alreadyMoved;
     private boolean moving;
-    private int nbrBacks = 0;
-    private int nbrBack = 0;
-    private int nbrForward = 0;
+    private int useBackward = 0;
+    private int useForward = 0;
     private boolean isBack = false;
     String output = "";
-    int currentPositionInBoradHistory = 0;
-    private boolean isForward = false;
+    int currentPositionInBoardHistory = 0;
     static int algorithm = 1;
     JMenuBar menuBar;
 
     public CheckersFrame() {
-        Toolkit var1 = this.getToolkit();
-        this.setTitle("Checkers");
-        this.setDefaultCloseOperation(3);
+        this.setTitle("Checkers Dip");
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setAlwaysOnTop(true);
         this.pan = new CheckersField();
-        Dimension var2 = var1.getScreenSize();
         this.setSize(605, 650);
         this.setResizable(false);
-        this.setLocationRelativeTo((Component) null);
+        this.setLocationRelativeTo(null);
         this.createMenu();
         this.add(this.pan);
         this.addKeyListener(this);
@@ -94,350 +46,335 @@ public class CheckersFrame extends JFrame implements MouseListener, MouseMotionL
         this.setVisible(true);
     }
 
+    // Creation of menuBar
     public void createMenu() {
         this.menuBar = new JMenuBar();
-        JMenu var1 = new JMenu("Algorithm");
-        ButtonGroup var2 = new ButtonGroup();
-        JRadioButtonMenuItem var3 = new JRadioButtonMenuItem("MiniMax");
-        var3.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent var1) {
-                System.out.println("miniMax");
-                CheckersFrame.algorithm = 1;
-            }
+        JMenu algorithm = new JMenu("Algorithm");
+        ButtonGroup algorithmGroup = new ButtonGroup(); // Will be radio button
+
+        JRadioButtonMenuItem minimaxButton = new JRadioButtonMenuItem("MiniMax");
+        minimaxButton.addActionListener(var1 -> {
+            System.out.println("miniMax");
+            CheckersFrame.algorithm = 1;
         });
-        /*JRadioButtonMenuItem var4 = new JRadioButtonMenuItem("MiniMaxAB");
-        var4.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent var1) {
+        /*JRadioButtonMenuItem minimaxABButton = new JRadioButtonMenuItem("MiniMaxAB");
+        minimaxABButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent algorithm) {
                 System.out.println("miniMaxAB");
                 CheckersFrame.algorithm = 2;
             }
         });*/
-        var2.add(var3);
-        //var2.add(var4);
-        if (algorithm == 1) {
-            var3.setSelected(true);
-            //    var4.setSelected(false);
+
+        // Add to the group to check only one
+        algorithmGroup.add(minimaxButton);
+        //algorithmGroup.add(minimaxABButton);
+
+        if (CheckersFrame.algorithm == 1) {
+            minimaxButton.setSelected(true);
+            //    minimaxABButton.setSelected(false);
         } else {
-            var3.setSelected(false);
-            //   var4.setSelected(true);
+            minimaxButton.setSelected(false);
+            //   minimaxABButton.setSelected(true);
         }
 
-        var1.add(var3);
-        //var1.add(var4);
-        this.menuBar.add(var1);
-        JMenu var5 = new JMenu("Levels");
-        this.menuBar.add(var5);
-        ButtonGroup var6 = new ButtonGroup();
-        JRadioButtonMenuItem var7 = new JRadioButtonMenuItem("HardLevel");
-        var7.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent var1) {
-                System.out.println("hardLevel");
-            }
-        });
-        JRadioButtonMenuItem var8 = new JRadioButtonMenuItem("MediumLevel");
-        var8.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent var1) {
-                System.out.println("mediumLevel");
-            }
-        });
-        JRadioButtonMenuItem var9 = new JRadioButtonMenuItem("EasyLevel");
-        var9.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent var1) {
-                System.out.println("easyLevel");
-            }
-        });
-        var6.add(var7);
-        var6.add(var8);
-        var6.add(var9);
-        var5.add(var7);
-        var5.add(var8);
-        var5.add(var9);
+        algorithm.add(minimaxButton);
+        //algorithm.add(minimaxABButton);
+
+        // Add algo to menuBar
+        menuBar.add(algorithm);
+
+        // Levels added
+        JMenu levels = new JMenu("Levels");
+        menuBar.add(levels);
+
+        ButtonGroup levelsGroup = new ButtonGroup();
+
+        JRadioButtonMenuItem hardLevel = new JRadioButtonMenuItem("HardLevel");
+        hardLevel.addActionListener(var1 -> System.out.println("HardLevel was chosen"));
+
+        JRadioButtonMenuItem mediumLevel = new JRadioButtonMenuItem("MediumLevel");
+        mediumLevel.addActionListener(var1 -> System.out.println("MediumLevel was chosen"));
+
+        JRadioButtonMenuItem easyLevel = new JRadioButtonMenuItem("EasyLevel");
+        easyLevel.addActionListener(var1 -> System.out.println("EasyLevel was chosen"));
+
+        // Add levels to the group to check only one
+        levelsGroup.add(hardLevel);
+        levelsGroup.add(mediumLevel);
+        levelsGroup.add(easyLevel);
+
+        levels.add(hardLevel);
+        levels.add(mediumLevel);
+        levels.add(easyLevel);
+
         if (this.thinkDepth == 8) {
-            var7.setSelected(true);
-            var8.setSelected(false);
-            var9.setSelected(false);
+            hardLevel.setSelected(true);
+            mediumLevel.setSelected(false);
+            easyLevel.setSelected(false);
         } else if (this.thinkDepth == 5) {
-            var7.setSelected(false);
-            var8.setSelected(true);
-            var9.setSelected(false);
+            hardLevel.setSelected(false);
+            mediumLevel.setSelected(true);
+            easyLevel.setSelected(false);
         } else if (this.thinkDepth == 2) {
-            var7.setSelected(false);
-            var8.setSelected(false);
-            var9.setSelected(true);
+            hardLevel.setSelected(false);
+            mediumLevel.setSelected(false);
+            easyLevel.setSelected(true);
         }
 
-        JMenu var10 = new JMenu("Options");
-        this.menuBar.add(var10);
 
-        JMenuItem var12 = new JMenuItem("Backward", (Icon) null);
-        var12.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent var1) {
-                System.out.println("Do backward ");
-                System.out.println("The Current Position when i will Back " + CheckersFrame.this.currentPositionInBoradHistory);
-                if (CheckersFrame.this.currentPositionInBoradHistory - ++CheckersFrame.this.nbrBack >= 0) {
-                    CheckersFrame.this.isBack = true;
-                    CheckersFrame.this.pan.boardO = (Board) CheckersFrame.this.boardHistory.get(CheckersFrame.this.currentPositionInBoradHistory - CheckersFrame.this.nbrBack);
-                    CheckersFrame.this.currentPositionInBoradHistory -= CheckersFrame.this.nbrBack;
-                    CheckersFrame.this.pan.repaint();
-                    CheckersFrame.this.nbrBack = 0;
-                } else {
-                    CheckersFrame.this.nbrBack = 0;
-                }
+        JMenu help = new JMenu("Help");
+        this.menuBar.add(help);
 
-            }
-        });
-        JMenuItem var13 = new JMenuItem("Forward", (Icon) null);
-        var13.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent var1) {
-                System.out.println("Do forward ");
-                if (CheckersFrame.this.currentPositionInBoradHistory + ++CheckersFrame.this.nbrForward < CheckersFrame.this.boardHistory.size()) {
-                    CheckersFrame.this.pan.boardO = (Board) CheckersFrame.this.boardHistory.get(CheckersFrame.this.currentPositionInBoradHistory + CheckersFrame.this.nbrForward);
-                    CheckersFrame.this.currentPositionInBoradHistory += CheckersFrame.this.nbrForward;
-                    CheckersFrame.this.nbrForward = 0;
-                } else {
-                    CheckersFrame.this.nbrForward = 0;
-                }
-
+        JMenuItem backward = new JMenuItem("Backward", null);
+        backward.addActionListener(var1 -> {
+            System.out.println("Backward ");
+            System.out.println("Current position of that game " + CheckersFrame.this.currentPositionInBoardHistory);
+            if (CheckersFrame.this.currentPositionInBoardHistory - ++CheckersFrame.this.useBackward >= 0) {
+                CheckersFrame.this.isBack = true;
+                CheckersFrame.this.pan.boardInit = CheckersFrame.this.boardHistory.get
+                        (CheckersFrame.this.currentPositionInBoardHistory - CheckersFrame.this.useBackward);
+                CheckersFrame.this.currentPositionInBoardHistory -= CheckersFrame.this.useBackward;
                 CheckersFrame.this.pan.repaint();
             }
+            CheckersFrame.this.useBackward = 0;
+
         });
-        JMenuItem var14 = new JMenuItem("Reset board", (Icon) null);
-        var14.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent var1) {
-                System.out.println("Do resetBoard ");
-                CheckersFrame.this.pan.pawns.clear();
-                CheckersFrame.this.pan.boardO.initialize();
-                CheckersFrame.this.boardHistory.clear();
-                CheckersFrame.this.currentPositionInBoradHistory = 0;
-                CheckersFrame.this.isBack = false;
-                CheckersFrame.this.pan.repaint();
+        JMenuItem forward = new JMenuItem("Forward", null);
+        forward.addActionListener(var1 -> {
+            System.out.println("Forward ");
+            if (CheckersFrame.this.currentPositionInBoardHistory + ++CheckersFrame.this.useForward < CheckersFrame.this.boardHistory.size()) {
+                CheckersFrame.this.pan.boardInit = CheckersFrame.this.boardHistory.get
+                        (CheckersFrame.this.currentPositionInBoardHistory + CheckersFrame.this.useForward);
+                CheckersFrame.this.currentPositionInBoardHistory += CheckersFrame.this.useForward;
             }
+            CheckersFrame.this.useForward = 0;
+            CheckersFrame.this.pan.repaint();
         });
 
-        JMenuItem var15 = new JMenuItem("help", (Icon) null);
-        var15.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent var1) {
-                System.out.println("Do help ");
-                Board var2 = null;
-                if (CheckersFrame.algorithm == 1) {
-                    var2 = GameSearch.minimax(CheckersFrame.this.pan.boardO, CheckersFrame.this.thinkDepth, CheckersFrame.this.userColor);
-                } else {
-                    /* var2 = GameSearch.minimaxAB(CheckersFrame.this.pan.boardO, CheckersFrame.this.thinkDepth, CheckersFrame.this.userColor, GameSearch.minusInfinityBoard(), GameSearch.plusInfinityBoard());
-                     */
-                }
-
-                Move var3 = var2.getHistory().first().getNext();
-                CheckersFrame.this.pan.bestMoves.add(var3.getChecker().getPosition().get());
-                CheckersFrame.this.pan.bestMoves.add(var3.getDestination().get());
-                CheckersFrame.this.pan.repaint();
-            }
+        JMenuItem resetBoard = new JMenuItem("Reset board", null);
+        resetBoard.addActionListener(var1 -> {
+            System.out.println("ResetBoard ");
+            CheckersFrame.this.pan.pawns.clear();
+            CheckersFrame.this.pan.boardInit.initialize();
+            CheckersFrame.this.boardHistory.clear();
+            CheckersFrame.this.currentPositionInBoardHistory = 0;
+            CheckersFrame.this.isBack = false;
+            CheckersFrame.this.pan.repaint();
         });
-        var10.add(var12);
-        var10.add(var13);
-        var10.add(var15);
-        var10.add(var14);
+
+        JMenuItem helpingMove = new JMenuItem("Help with move", null);
+        helpingMove.addActionListener(var1 -> {
+            System.out.println("Help with ur moving");
+            Board tempBoard = null;
+            if (CheckersFrame.algorithm == 1) {
+                tempBoard = Algorithm.minimax(CheckersFrame.this.pan.boardInit, CheckersFrame.this.thinkDepth, CheckersFrame.this.userColor);
+            }  /* algorithmGroup = GameSearch.minimaxAB(CheckersFrame.this.pan.boardO, CheckersFrame.this.thinkDepth, CheckersFrame.this.userColor, GameSearch.minusInfinityBoard(), GameSearch.plusInfinityBoard());
+             */
+
+            assert tempBoard != null;
+            Move move = tempBoard.getHistory().first().getNext();
+            CheckersFrame.this.pan.bestMoves.add(move.getChecker().getPosition().get());
+            CheckersFrame.this.pan.bestMoves.add(move.getDestination().get());
+            CheckersFrame.this.pan.repaint();
+        });
+        help.add(backward);
+        help.add(forward);
+        help.add(helpingMove);
+        help.add(resetBoard);
 
         this.setJMenuBar(this.menuBar);
     }
 
-    public static void main(String[] var0) {
+    public static void main(String[] args) {
         new CheckersFrame();
     }
 
-    public void mouseClicked(MouseEvent var1) {
-        int var2 = 0;
+    public void mouseClicked(MouseEvent e) {
+        int testClick = 0;
 
-        int var3;
-        for (var3 = 0; var3 < this.pan.allBoardPoints.size(); ++var3) {
-            if (var1.getX() > (int) ((Point) this.pan.allBoardPoints.get(var3)).getX() && var1.getX() < (int) (((Point) this.pan.allBoardPoints.get(var3)).getX() + 75.0D) && var1.getY() - 40 < (int) (((Point) this.pan.allBoardPoints.get(var3)).getY() + 75.0D) && var1.getY() - 40 > (int) ((Point) this.pan.allBoardPoints.get(var3)).getY()) {
-                var2 = var3 + 1;
+        for (int i = 0; i < this.pan.allBoardPoints.size(); i++) {
+            if (e.getX() > (int) this.pan.allBoardPoints.get(i).getX() && e.getX()
+                    < (int) (this.pan.allBoardPoints.get(i).getX() + 75.0D) && e.getY() - 40
+                    < (int) (this.pan.allBoardPoints.get(i).getY() + 75.0D) && e.getY() - 40
+                    > (int) this.pan.allBoardPoints.get(i).getY()) {
+                testClick = i + 1;
                 break;
             }
         }
 
-        for (var3 = 0; var3 < this.pan.pawns.size(); ++var3) {
-            if (var1.getX() > (int) ((Pawn) this.pan.pawns.get(var3)).point.getX() && var1.getX() < (int) (((Pawn) this.pan.pawns.get(var3)).point.getX() + 75.0D) && var1.getY() - 27 < (int) (((Pawn) this.pan.pawns.get(var3)).point.getY() + 75.0D) && var1.getY() - 27 > (int) ((Pawn) this.pan.pawns.get(var3)).point.getY()) {
-                this.clickedHere = var3;
+        for (int i = 0; i < this.pan.pawns.size(); i++) {
+            if (e.getX() > (int) this.pan.pawns.get(i).point.getX() && e.getX()
+                    < (int) (this.pan.pawns.get(i).point.getX() + 75.0D) && e.getY() - 27
+                    < (int) (this.pan.pawns.get(i).point.getY() + 75.0D) && e.getY() - 27
+                    > (int) this.pan.pawns.get(i).point.getY()) {
+                this.clickedHere = i;
                 break;
             }
         }
 
-        MoveList var5 = GameSearch.findAllValidMoves(this.pan.boardO, this.userColor);
-        this.pan.possibleMoves.clear();
+        MoveList normalMoves = GameRules.findAllValidMoves(pan.boardInit, userColor);
+        pan.possibleMoves.clear();
 
-        for (int var4 = 0; var4 < var5.size(); ++var4) {
-            if (var2 - 1 >= 0 && this.pan.boardO.getChecker(new Coordinate(var2)) != null && var5.get(var4).getChecker().getPosition() == this.pan.boardO.getChecker(new Coordinate(var2)).getPosition()) {
-                this.pan.possibleMoves.add(var5.get(var4).getDestination().get());
-                this.pan.repaint();
+        for (int i = 0; i < normalMoves.size(); i++) {
+            if (testClick - 1 >= 0 && pan.boardInit.getChecker(new Coordinate(testClick)) != null
+                    && normalMoves.get(i).getChecker().getPosition() == pan.boardInit.getChecker(new Coordinate(testClick)).getPosition()) {
+                pan.possibleMoves.add(normalMoves.get(i).getDestination().get());
+                pan.repaint();
             }
         }
 
-        if (var1.getX() > 690 && var1.getX() < 744 && var1.getY() - 27 > 530 && var1.getY() - 27 < 584) {
-            this.pan.pawns.clear();
-            this.pan.boardO.initialize();
-            this.boardHistory.clear();
-            this.currentPositionInBoradHistory = 0;
-            this.isBack = false;
-            this.pan.repaint();
+        if (e.getX() > 690 && e.getX() < 744 && e.getY() - 27 > 530 && e.getY() - 27 < 584) {
+            pan.pawns.clear();
+            pan.boardInit.initialize();
+            boardHistory.clear();
+            currentPositionInBoardHistory = 0;
+            isBack = false;
+            pan.repaint();
         }
 
     }
 
-    public void mousePressed(MouseEvent var1) {
-    }
+    public void mouseReleased(MouseEvent e) {
+        if (alreadyMoved) {
+            fromPawnIndex = clickedHere + 1;
 
-    public void mouseReleased(MouseEvent var1) {
-        if (this.alreadyMoved) {
-            this.FromPawnIndex = this.clickedHere + 1;
-
-            for (int var2 = 0; var2 < this.pan.allBoardPoints.size(); ++var2) {
-                if (var1.getX() > (int) ((Point) this.pan.allBoardPoints.get(var2)).getX() && var1.getX() < (int) (((Point) this.pan.allBoardPoints.get(var2)).getX() + 75.0D) && var1.getY() - 27 < (int) (((Point) this.pan.allBoardPoints.get(var2)).getY() + 75.0D) && var1.getY() - 27 > (int) ((Point) this.pan.allBoardPoints.get(var2)).getY()) {
-                    this.ToPawnIndex = var2 + 1;
+            for (int i = 0; i < this.pan.allBoardPoints.size(); i++) {
+                if (e.getX() > (int) this.pan.allBoardPoints.get(i).getX() && e.getX()
+                        < (int) (this.pan.allBoardPoints.get(i).getX() + 75.0D) && e.getY() - 27
+                        < (int) (this.pan.allBoardPoints.get(i).getY() + 75.0D) && e.getY() - 27
+                        > (int) this.pan.allBoardPoints.get(i).getY()) {
+                    toPawnIndex = i + 1;
                     break;
                 }
             }
 
-            if (this.clickedHere >= 0) {
-                this.moveUser(new Coordinate(((Pawn) this.pan.pawns.get(this.clickedHere)).posindex), new Coordinate(this.ToPawnIndex));
+            if (clickedHere >= 0) {
+                moveUser(new Coordinate(pan.pawns.get(clickedHere).index), new Coordinate(toPawnIndex));
             }
 
-            this.pan.newBoard = true;
-            this.pan.repaint();
-            this.clickedHere = -48;
-            this.setCursor(0);
-            this.alreadyMoved = false;
-            this.moving = false;
+            pan.newBoard = true;
+            pan.repaint();
+            clickedHere = -48;
+            setCursor(0);
+            alreadyMoved = false;
+            moving = false;
         }
 
     }
 
-    public void mouseEntered(MouseEvent var1) {
-    }
-
-    public void mouseExited(MouseEvent var1) {
-    }
-
-    public void mouseDragged(MouseEvent var1) {
-        this.alreadyMoved = true;
-        this.setCursor(1);
-        this.pan.possibleMoves.clear();
-        this.pan.bestMoves.clear();
-        if (!this.moving) {
-            for (int var2 = 0; var2 < this.pan.pawns.size(); ++var2) {
-                if (var1.getX() > (int) ((Pawn) this.pan.pawns.get(var2)).point.getX() && var1.getX() < (int) (((Pawn) this.pan.pawns.get(var2)).point.getX() + 75.0D) && var1.getY() - 27 < (int) (((Pawn) this.pan.pawns.get(var2)).point.getY() + 75.0D) && var1.getY() - 27 > (int) ((Pawn) this.pan.pawns.get(var2)).point.getY()) {
-                    this.clickedHere = var2;
+    public void mouseDragged(MouseEvent e) {
+        alreadyMoved = true;
+        setCursor(1);
+        pan.possibleMoves.clear();
+        pan.bestMoves.clear();
+        if (!moving) {
+            for (int i = 0; i < this.pan.pawns.size(); i++) {
+                if (e.getX() > (int) pan.pawns.get(i).point.getX() && e.getX()
+                        < (int) (pan.pawns.get(i).point.getX() + 75.0D) && e.getY() - 27
+                        < (int) (pan.pawns.get(i).point.getY() + 75.0D) && e.getY() - 27
+                        > (int) pan.pawns.get(i).point.getY()) {
+                    this.clickedHere = i;
                     break;
                 }
             }
         }
 
-        if (this.clickedHere >= 0) {
-            this.pan.newBoard = false;
-            this.moving = true;
-            ((Pawn) this.pan.pawns.get(this.clickedHere)).setP(new Point(var1.getX() - 37, var1.getY() - 40 - 37));
-            this.pan.repaint();
+        if (clickedHere >= 0) {
+            pan.newBoard = false;
+            moving = true;
+            pan.pawns.get(clickedHere).setPoint(new Point(e.getX() - 37, e.getY() - 40 - 37));
+            pan.repaint();
         }
 
     }
 
-    public void mouseMoved(MouseEvent var1) {
-    }
-
-    public void moveUser(Coordinate var1, Coordinate var2) {
-        this.pan.turn = "your turn";
-        Move var3 = this.validateUserMove(var1, var2);
-        if (var3 == null) {
-            System.out.println(" The Move is not Valid ");
-            this.outputText("Invalid move.");
+    public void moveUser(Coordinate from, Coordinate to) {
+        pan.turn = "Ur move";
+        Move move = validateUserMove(from, to);
+        if (move == null) {
+            System.out.println(" This move is not valid. Try harder ");
+            outputText("Invalid move.");
         } else {
-            boolean var4;
-            int var5;
-            if (var3.isJump()) {
-                if (this.isBack) {
-                    var4 = false;
-                    var5 = this.currentPositionInBoradHistory;
-                    this.removeBordsAfter(this.currentPositionInBoradHistory + 1);
-                    this.isBack = false;
-                    this.currentPositionInBoradHistory = this.boardHistory.size() + 1;
-                } else if (this.boardHistory.size() == 0) {
-                    this.currentPositionInBoradHistory = 0;
-                    this.boardHistory.add(this.pan.boardO);
+            if (move.isJump()) {
+                if (isBack) {
+                    removeBoardsAfter(currentPositionInBoardHistory + 1);
+                    isBack = false;
+                    currentPositionInBoardHistory = boardHistory.size() + 1;
+                } else if (boardHistory.size() == 0) {
+                    currentPositionInBoardHistory = 0;
+                    boardHistory.add(pan.boardInit);
                 }
 
-                this.pan.boardO = GameSearch.executeUserJump(var3, this.pan.boardO);
-                this.multipleJumpsChecker = this.pan.boardO.getChecker(var3.getDestination());
-                if (this.mandatoryJump(this.multipleJumpsChecker, this.pan.boardO)) {
-                    this.outputText("A multiple jump must be completed.");
+                pan.boardInit = GameRules.executeUserJump(move, pan.boardInit);
+                CheckerPosition multipleJumpsChecker = pan.boardInit.getChecker(move.getDestination());
+                if (requiredJump(multipleJumpsChecker, pan.boardInit)) {
+                    outputText("A multiple jump must be done ");
                 } else {
-                    this.computerMoves();
+                    computerMoves();
                 }
-            } else if (GameSearch.existJump(this.pan.boardO, this.userColor)) {
+            } else if (GameRules.existJump(pan.boardInit, userColor)) {
                 this.outputText("Invalid move. If you can jump, you must.");
             } else {
-                if (this.isBack) {
-                    var4 = false;
-                    var5 = this.currentPositionInBoradHistory;
-                    this.removeBordsAfter(this.currentPositionInBoradHistory + 1);
-                    this.isBack = false;
-                    this.currentPositionInBoradHistory = this.boardHistory.size() + 1;
-                } else if (this.boardHistory.size() == 0) {
-                    this.currentPositionInBoradHistory = 0;
-                    this.boardHistory.add(this.pan.boardO);
+                if (isBack) {
+                    removeBoardsAfter(currentPositionInBoardHistory + 1);
+                    isBack = false;
+                    currentPositionInBoardHistory = boardHistory.size() + 1;
+                } else if (boardHistory.size() == 0) {
+                    currentPositionInBoardHistory = 0;
+                    boardHistory.add(pan.boardInit);
                 }
 
-                this.pan.boardO = GameSearch.executeMove(var3, this.pan.boardO);
-                this.pan.user_move = var3.toString();
-                this.computerMoves();
+                pan.boardInit = GameRules.executeMove(move, this.pan.boardInit);
+                pan.user_move = move.toString();
+                computerMoves();
             }
         }
 
     }
 
-    public Move validateUserMove(Coordinate var1, Coordinate var2) {
-        Object var3 = null;
-        CheckerPosition var4 = this.pan.boardO.getChecker(var1);
-        if (var4 == null) {
-        }
+    public Move validateUserMove(Coordinate from, Coordinate to) {
+        Move move = null;
+        CheckerPosition checker = this.pan.boardInit.getChecker(from);
 
-        if (var4 != null) {
-            if (this.userColor == 2) {
-                if (var4.getColor() == 2) {
-                    if (var4.getValue() == 3) {
-                        if (Math.abs(var1.row() - var2.row()) == 1) {
-                            if (GameSearch.validKingMove(var1, var2, this.pan.boardO)) {
-                                var3 = new MoveNormal(var4, var2);
+        if (checker != null) {
+            if (userColor == 2) {
+                if (checker.getColor() == 2) {
+                    if (checker.getValue() == 3) {
+                        if (Math.abs(from.row() - to.row()) == 1) {
+                            if (GameRules.validKingMove(from, to, pan.boardInit)) {
+                                move = new OnlyMove(checker, to);
                             }
-                        } else if (GameSearch.validKingJump(var1, var2, this.pan.boardO)) {
-                            var3 = new MoveJump(var4, var2);
+                        } else if (GameRules.validKingJump(from, to, pan.boardInit)) {
+                            move = new MoveJump(checker, to);
                         }
-                    } else if (var1.row() - var2.row() == 1) {
-                        if (GameSearch.validWhiteMove(var1, var2, this.pan.boardO)) {
-                            var3 = new MoveNormal(var4, var2);
+                    } else if (from.row() - to.row() == 1) {
+                        if (GameRules.validWhiteMove(from, to, pan.boardInit)) {
+                            move = new OnlyMove(checker, to);
                         }
-                    } else if (GameSearch.validWhiteJump(var1, var2, this.pan.boardO)) {
-                        var3 = new MoveJump(var4, var2);
+                    } else if (GameRules.validWhiteJump(from, to, pan.boardInit)) {
+                        move = new MoveJump(checker, to);
                     }
                 }
-            } else if (var4.getColor() == 1) {
-                if (var4.getValue() == -3) {
-                    if (Math.abs(var1.row() - var2.row()) == 1) {
-                        if (GameSearch.validKingMove(var1, var2, this.pan.boardO)) {
-                            var3 = new MoveNormal(var4, var2);
+            } else if (checker.getColor() == 1) {
+                if (checker.getValue() == -3) {
+                    if (Math.abs(from.row() - to.row()) == 1) {
+                        if (GameRules.validKingMove(from, to, pan.boardInit)) {
+                            move = new OnlyMove(checker, to);
                         }
-                    } else if (GameSearch.validKingJump(var1, var2, this.pan.boardO)) {
-                        var3 = new MoveJump(var4, var2);
+                    } else if (GameRules.validKingJump(from, to, pan.boardInit)) {
+                        move = new MoveJump(checker, to);
                     }
-                } else if (var2.row() - var1.row() == 1) {
-                    if (GameSearch.validBlackMove(var1, var2, this.pan.boardO)) {
-                        var3 = new MoveNormal(var4, var2);
+                } else if (to.row() - from.row() == 1) {
+                    if (GameRules.validBlackMove(from, to, pan.boardInit)) {
+                        move = new OnlyMove(checker, to);
                     }
-                } else if (GameSearch.validBlackJump(var1, var2, this.pan.boardO)) {
-                    var3 = new MoveJump(var4, var2);
+                } else if (GameRules.validBlackJump(from, to, pan.boardInit)) {
+                    move = new MoveJump(checker, to);
                 }
             }
         }
 
-        return (Move) var3;
+        return move;
     }
 
     private void outputText(String s) {
@@ -445,76 +382,90 @@ public class CheckersFrame extends JFrame implements MouseListener, MouseMotionL
         System.out.println("" + (output));
     }
 
-    private boolean mandatoryJump(CheckerPosition var1, Board var2) {
-        MoveList var3 = new MoveList();
-        var1.findValidJumps(var3, var2);
-        return var3.size() != 0;
+    private boolean requiredJump(CheckerPosition checker, Board board) {
+        MoveList moveList = new MoveList();
+        checker.findValidJumps(moveList, board);
+        return moveList.size() != 0;
     }
 
     public void computerMoves() {
-        this.pan.turn = " Computer turn ";
-        MoveList var1 = GameSearch.findAllValidMoves(this.pan.boardO, this.computerColor);
-        if (var1.size() == 0) {
-            JOptionPane.showMessageDialog(this, "\nCongratulations!You win\n", "Checkers", 1);
-            this.outputText("You win.");
+        this.pan.turn = " Computer think ";
+        int computerColor = 1;
+        MoveList normalMoves = GameRules.findAllValidMoves(pan.boardInit, computerColor);
+        if (normalMoves.size() == 0) {
+            JOptionPane.showMessageDialog(this, "\nCongratulations!You win\n",
+                    "Checkers Dip", JOptionPane.INFORMATION_MESSAGE);
+            outputText("You win.");
         } else {
-            this.pan.boardO.getHistory().reset();
-            Board var2 = null;
+            pan.boardInit.getHistory().reset();
+            Board board = null;
             if (algorithm == 2) {
-                var2 = GameSearch.minimaxAB(this.pan.boardO, this.thinkDepth, this.computerColor, GameSearch.minusInfinityBoard(), GameSearch.plusInfinityBoard());
+                board = Algorithm.minimaxAB(pan.boardInit, thinkDepth, computerColor, GameRules.minusInfinityBoard(), GameRules.plusInfinityBoard());
             }
 
             if (algorithm == 1) {
-                var2 = GameSearch.minimax(this.pan.boardO, this.thinkDepth, this.computerColor);
+                board = Algorithm.minimax(pan.boardInit, thinkDepth, computerColor);
             }
 
-            Move var3 = var2.getHistory().first();
-            this.pan.boardO = GameSearch.executeMove(var3, this.pan.boardO);
-            if (!this.isBack && !this.isForward) {
-                this.boardHistory.add(this.pan.boardO);
-                this.currentPositionInBoradHistory = this.boardHistory.size() - 1;
+            assert board != null;
+            Move move = board.getHistory().first();
+            pan.boardInit = GameRules.executeMove(move, pan.boardInit);
+            boolean isForward = false;
+            if (!this.isBack && !isForward) {
+                boardHistory.add(pan.boardInit);
+                currentPositionInBoardHistory = boardHistory.size() - 1;
             }
 
-            MoveIter var4 = this.pan.boardO.getHistory().getIterator();
-            String var5 = "";
+            MoveIter iterator = pan.boardInit.getHistory().getIterator();
+            StringBuilder moves = new StringBuilder();
 
-            while (var4.hasNext()) {
-                var5 = var5 + var4.next();
-                if (var4.hasNext()) {
-                    var5 = var5 + " , ";
+            while (iterator.hasNext()) {
+                moves.append(iterator.next());
+                if (iterator.hasNext()) {
+                    moves.append(" , ");
                 }
             }
 
-            this.pan.computer_move = var5;
-            int var6 = var5.indexOf("(");
-            int var7 = var5.indexOf(")");
-            String[] var8 = var5.substring(var6 + 1, var7).split("-");
-            this.outputText("the computer make this move : " + var5);
-            var1 = GameSearch.findAllValidMoves(this.pan.boardO, this.userColor);
-            if (var1.size() == 0) {
-                JOptionPane.showMessageDialog(this, "Computer wins!", "Checkers", 1);
-                this.outputText("Sorry. The computer wins.");
+            pan.computer_move = moves.toString();
+
+            outputText(" Computer's move : " + moves);
+            normalMoves = GameRules.findAllValidMoves(pan.boardInit, userColor);
+            if (normalMoves.size() == 0) {
+                JOptionPane.showMessageDialog(this, "Computer wins!",
+                        "Checkers Dip", JOptionPane.INFORMATION_MESSAGE);
+                outputText("Computer wins.");
             }
         }
 
     }
 
-    public void keyTyped(KeyEvent var1) {
-    }
+    private void removeBoardsAfter(int count) {
+        int cut = boardHistory.size();
 
-    public void keyPressed(KeyEvent var1) {
-    }
-
-    public void keyReleased(KeyEvent var1) {
-    }
-
-    private void removeBordsAfter(int var1) {
-        int var2 = this.boardHistory.size();
-
-        for (int var3 = var2 - 1; var3 >= var1; --var3) {
-            this.boardHistory.remove(var3);
+        if (cut > count) {
+            boardHistory.subList(count, cut).clear();
         }
 
     }
 
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public void keyPressed(KeyEvent e) {
+    }
+
+    public void keyReleased(KeyEvent e) {
+    }
+
+    public void mousePressed(MouseEvent e) {
+    }
+
+    public void mouseExited(MouseEvent e) {
+    }
+
+    public void mouseMoved(MouseEvent e) {
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
 }

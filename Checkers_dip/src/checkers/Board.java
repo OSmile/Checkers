@@ -3,133 +3,128 @@ package checkers;
 import java.io.Serializable;
 
 public class Board implements Serializable {
+
     private CheckerPosition[] board = new CheckerPosition[32];
-    private MoveList history = new MoveList();
+    private MoveList allMoves = new MoveList(); // All moves here
     protected Board next = null;
 
     public Board() {
     }
 
-    public Board copy() {
-        Board var1 = new Board();
-        Coordinate var2 = null;
-        var1.setHistory(this.history.copy());
+    public CheckerPosition getChecker(Coordinate c) {
+        return board[c.get() - 1];
+    }
 
-        for(int var3 = 1; var3 < 33; ++var3) {
-            var2 = new Coordinate(var3);
-            if (this.getChecker(var2) != null) {
-                var1.setChecker(this.getChecker(var2).copy(), var2);
+    public void setChecker(CheckerPosition setChecker, Coordinate coordinate) {
+        this.board[coordinate.get() - 1] = setChecker;
+        setChecker.setPosition(coordinate);
+    }
+
+    public Board copy() {
+        Board newBoard = new Board();
+        Coordinate tempCoord;
+        newBoard.setHistory(this.allMoves.copy());
+
+        for(int i = 1; i < 33; i++) {
+            tempCoord = new Coordinate(i);
+            if (this.getChecker(tempCoord) != null) {
+                newBoard.setChecker(this.getChecker(tempCoord).copy(), tempCoord);
             }
         }
 
-        return var1;
+        return newBoard;
     }
 
-    public CheckerPosition getChecker(Coordinate var1) {
-        return this.board[var1.get() - 1];
+    public void removeChecker(CheckerPosition checker) {
+        board[checker.getPosition().get() - 1] = null;
     }
 
-    public void setChecker(CheckerPosition var1, Coordinate var2) {
-        this.board[var2.get() - 1] = var1;
-        var1.setPosition(var2);
-    }
-
-    public void removeChecker(CheckerPosition var1) {
-        this.board[var1.getPosition().get() - 1] = null;
-    }
-
-    public boolean vacantCoordinate(Coordinate var1) {
-        return this.getChecker(var1) == null;
+    public boolean availableCoordinate(Coordinate c) {
+        return (getChecker(c) == null);
     }
 
     public int evaluate() {
-        int var1 = 0;
-        Coordinate var2 = null;
-
-        for(int var3 = 1; var3 < 33; ++var3) {
-            var2 = new Coordinate(var3);
-            if (this.getChecker(var2) != null) {
-                var1 += this.getChecker(var2).getValue();
-            }
+        int score = 0;
+        Coordinate c;
+        for (int i = 1; i < 33; i++) {
+            c = new Coordinate(i);
+            if (getChecker(c) != null)
+                score = score + getChecker(c).getValue();
         }
-
-        return var1;
+        return score;
     }
 
-    public void setHistory(MoveList var1) {
-        this.history = var1;
+    public void setHistory(MoveList history) {
+        this.allMoves = history;
     }
+
 
     public MoveList getHistory() {
-        return this.history;
+        return allMoves;
     }
 
-    public void addMoveToHistory(Move var1) {
-        this.history.add(var1);
+
+    public void addMoveToHistory(Move move) {
+        allMoves.add(move);
     }
+
 
     public void initialize() {
-        this.initializeTop();
-        this.initializeMiddle();
-        this.initializeBottom();
+        initializeTop();
+        initializeMiddle();
+        initializeBottom();
     }
+
 
     private void initializeTop() {
-        for(int var1 = 1; var1 < 13; ++var1) {
-            this.board[var1 - 1] = new BlackChecker(new Coordinate(var1));
-        }
-
+        for (int i = 1; i < 13; i++)
+            board[i - 1] = new BlackChecker(new Coordinate(i));
     }
+
 
     private void initializeMiddle() {
-        for(int var1 = 13; var1 < 21; ++var1) {
-            this.board[var1 - 1] = null;
-        }
-
+        for (int i = 13; i < 21; i++)
+            board[i - 1] = null;
     }
+
 
     private void initializeBottom() {
-        for(int var1 = 21; var1 < 33; ++var1) {
-            this.board[var1 - 1] = new WhiteChecker(new Coordinate(var1));
-        }
-
+        for (int i = 21; i < 33; i++)
+            board[i - 1] = new WhiteChecker(new Coordinate(i));
     }
 
-    public void setNext(Board var1) {
-        this.next = var1;
+
+    // For the BoardList class.
+    public void setNext(Board next) {
+        this.next = next;
     }
 
+
+    // For the BoardList class.
     public Board getNext() {
-        return this.next;
+        return next;
     }
+
 
     public String toString() {
-        String[][] var1 = new String[8][8];
-        Coordinate var2 = null;
-
-        for(int var3 = 1; var3 < 33; ++var3) {
-            var2 = new Coordinate(var3);
-            if (this.getChecker(var2) != null) {
-                var1[var2.column()][var2.row()] = this.getChecker(var2).toString();
-            }
+        String[][] drawBoard = new String[8][8];
+        Coordinate temp;
+        for (int i = 1;i < 33; i++) {
+            temp = new Coordinate(i);
+            if (getChecker(temp) != null)
+                drawBoard[temp.column()][temp.row()] = getChecker(temp).toString();
         }
-
-        String var6 = " +---+---+---+---+---+---+---+---+\n ";
-
-        for(int var4 = 0; var4 < 8; ++var4) {
-            for(int var5 = 0; var5 < 8; ++var5) {
-                if (var1[var5][var4] != null) {
-                    var6 = var6 + "| " + var1[var5][var4] + " ";
-                } else {
-                    var6 = var6 + "|   ";
-                }
+        StringBuilder s = new StringBuilder(" +---+---+---+---+---+---+---+---+\n ");
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                if (drawBoard[x][y] != null)
+                    s.append("| ").append(drawBoard[x][y]).append(" ");
+                else
+                    s.append("|   ");
             }
-
-            var6 = var6 + "| (" + (var4 * 4 + 1) + "-" + (var4 * 4 + 4) + ")";
-            var6 = var6 + "\n +---+---+---+---+---+---+---+---+\n ";
+            s.append("| (").append((y * 4) + 1).append("-").append((y * 4) + 4).append(")");
+            s.append("\n +---+---+---+---+---+---+---+---+\n ");
         }
-
-        return var6;
+        return s.toString();
     }
 }
-

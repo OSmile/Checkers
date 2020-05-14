@@ -1,11 +1,15 @@
 package checkers;
 
+/**
+ * Iterator for BoardList
+ */
+
 public class BoardIter{
     private BoardList boardList;
     private int current;
 
-    public BoardIter(BoardList var1) {
-        this.boardList = var1;
+    public BoardIter(BoardList bl) {
+        this.boardList = bl;
         this.current = 0;
     }
 

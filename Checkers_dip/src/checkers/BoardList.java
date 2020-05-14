@@ -1,5 +1,9 @@
 package checkers;
 
+/**
+ * List of boards
+ */
+
 public class BoardList {
     private Board boardList = null;
     private Board last;
@@ -8,70 +12,62 @@ public class BoardList {
     public BoardList() {
     }
 
-    public void add(Board var1) {
-        if (this.boardList == null) {
-            this.boardList = var1;
-            this.last = var1;
-        } else {
-            this.last.setNext(var1);
-            this.last = var1;
+    public void add(Board boardElem) {
+        if (this.boardList == null) { // first elem added
+            this.boardList = boardElem;
+        } else { // adding new board elem to the last place
+            this.last.setNext(boardElem);
         }
+        this.last = boardElem;
 
-        ++this.listSize;
+        this.listSize++;
     }
 
     public int size() {
         return this.listSize;
     }
 
-    public Board first() {
-        return this.boardList;
-    }
+    public Board get(int index) throws IndexOutOfBoundsException {
+        int currentBoard = 0;
+        Board board = boardList;
 
-    public Board get(int var1) throws IndexOutOfBoundsException {
-        int var2 = 0;
-
-        Board var3;
-        for(var3 = this.boardList; var2 != var1; ++var2) {
-            var3 = var3.getNext();
-            if (var3 == null) {
+        while (currentBoard != index) {
+            board = board.getNext();
+            if (board == null) {
                 throw new IndexOutOfBoundsException();
             }
+            currentBoard++;
         }
 
-        return var3;
+        return board;
     }
 
     public BoardIter getIterator() {
         return new BoardIter(this);
     }
 
-    public Board findBestBoard(int var1) {
-        BoardIter var2 = this.getIterator();
-        Board var3 = var2.next();
+    public Board findBestBoard(int color) {
+        BoardIter iterator = getIterator();
+        Board bestBoard = iterator.next();
 
-        while(var2.hasNext()) {
-            if (var1 == 2) {
-                var3 = GameSearch.maxBoard(var3, var2.next());
-            } else {
-                var3 = GameSearch.minBoard(var3, var2.next());
-            }
+        while (iterator.hasNext()) {
+            if (color == CheckerPosition.WHITE)
+                bestBoard = GameRules.maxBoard(bestBoard, iterator.next());
+            else
+                bestBoard = GameRules.minBoard(bestBoard, iterator.next());
         }
-
-        return var3;
+        return bestBoard;
     }
 
     public String toString() {
-        BoardIter var1 = this.getIterator();
-        String var2 = "BoardList: ";
-
-        while(var1.hasNext()) {
-            var2 = var2 + var1.next().toString();
-            if (var1.hasNext()) {
-                var2 = var2 + " , ";
+        BoardIter iterator = getIterator();
+        StringBuilder boardList = new StringBuilder("BoardList: ");
+        while (iterator.hasNext()) {
+            boardList.append(iterator.next().toString());
+            if (iterator.hasNext()) {
+                boardList.append(" , ");
             }
         }
-
-        return var2;
+        return boardList.toString();
     }
 }

@@ -1,57 +1,59 @@
 package checkers;
 
 import java.io.Serializable;
+/**
+ * Implements the king's state for the methods findValidMoves and findValidJumps
+ */
 
 public class KingState implements CheckerStates, Serializable {
-    public KingState() {
-    }
 
-    public boolean findValidMoves(CheckerPosition var1, Board var2, MoveList var3) {
-        if (!this.findValidJumps(var1, var2, var3)) {
-            if (GameSearch.validKingMove(var1.getPosition(), var1.getPosition().downLeftMove(), var2)) {
-                var3.add(new MoveNormal(var1, var1.getPosition().downLeftMove()));
-            }
+    public boolean findValidMoves(final CheckerPosition coordPosition, final Board board,
+                                  MoveList validMoves) {
+        if (!findValidJumps(coordPosition, board, validMoves)) {
 
-            if (GameSearch.validKingMove(var1.getPosition(), var1.getPosition().downRightMove(), var2)) {
-                var3.add(new MoveNormal(var1, var1.getPosition().downRightMove()));
-            }
+            if (GameRules.validKingMove(coordPosition.getPosition(), coordPosition.getPosition().downLeftMove(),
+                    board))
+                validMoves.add(new OnlyMove(coordPosition, coordPosition.getPosition().downLeftMove()));
 
-            if (GameSearch.validKingMove(var1.getPosition(), var1.getPosition().upLeftMove(), var2)) {
-                var3.add(new MoveNormal(var1, var1.getPosition().upLeftMove()));
-            }
+            if (GameRules.validKingMove(coordPosition.getPosition(), coordPosition.getPosition().downRightMove(),
+                    board))
+                validMoves.add(new OnlyMove(coordPosition, coordPosition.getPosition().downRightMove()));
 
-            if (GameSearch.validKingMove(var1.getPosition(), var1.getPosition().upRightMove(), var2)) {
-                var3.add(new MoveNormal(var1, var1.getPosition().upRightMove()));
-            }
+            if (GameRules.validKingMove(coordPosition.getPosition(), coordPosition.getPosition().upLeftMove(),
+                    board))
+                validMoves.add(new OnlyMove(coordPosition, coordPosition.getPosition().upLeftMove()));
 
+            if (GameRules.validKingMove(coordPosition.getPosition(), coordPosition.getPosition().upRightMove(),
+                    board))
+                validMoves.add(new OnlyMove(coordPosition, coordPosition.getPosition().upRightMove()));
             return false;
-        } else {
-            return true;
         }
+        else
+            return true;
     }
 
-    public boolean findValidJumps(CheckerPosition var1, Board var2, MoveList var3) {
-        boolean var4 = false;
-        if (GameSearch.validKingJump(var1.getPosition(), var1.getPosition().downLeftJump(), var2)) {
-            var3.add(new MoveJump(var1, var1.getPosition().downLeftJump()));
-            var4 = true;
+    public boolean findValidJumps(CheckerPosition coordPosition, Board board, MoveList validJumps) {
+        boolean isJumpFound = false;
+        if (GameRules.validKingJump(coordPosition.getPosition(), coordPosition.getPosition().downLeftJump(), board)) {
+            validJumps.add(new MoveJump(coordPosition, coordPosition.getPosition().downLeftJump()));
+            isJumpFound = true;
         }
 
-        if (GameSearch.validKingJump(var1.getPosition(), var1.getPosition().downRightJump(), var2)) {
-            var3.add(new MoveJump(var1, var1.getPosition().downRightJump()));
-            var4 = true;
+        if (GameRules.validKingJump(coordPosition.getPosition(), coordPosition.getPosition().downRightJump(), board)) {
+            validJumps.add(new MoveJump(coordPosition, coordPosition.getPosition().downRightJump()));
+            isJumpFound = true;
         }
 
-        if (GameSearch.validKingJump(var1.getPosition(), var1.getPosition().upLeftJump(), var2)) {
-            var3.add(new MoveJump(var1, var1.getPosition().upLeftJump()));
-            var4 = true;
+        if (GameRules.validKingJump(coordPosition.getPosition(), coordPosition.getPosition().upLeftJump(), board)) {
+            validJumps.add(new MoveJump(coordPosition, coordPosition.getPosition().upLeftJump()));
+            isJumpFound = true;
         }
 
-        if (GameSearch.validKingJump(var1.getPosition(), var1.getPosition().upRightJump(), var2)) {
-            var3.add(new MoveJump(var1, var1.getPosition().upRightJump()));
-            var4 = true;
+        if (GameRules.validKingJump(coordPosition.getPosition(), coordPosition.getPosition().upRightJump(), board)) {
+            validJumps.add(new MoveJump(coordPosition, coordPosition.getPosition().upRightJump()));
+            isJumpFound = true;
         }
 
-        return var4;
+        return isJumpFound;
     }
 }

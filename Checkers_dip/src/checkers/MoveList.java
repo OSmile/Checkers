@@ -2,45 +2,73 @@ package checkers;
 
 import java.io.Serializable;
 
+/**
+ * List of moves
+ */
+
 public class MoveList implements Serializable {
-    private Move moveList = null;
+    private Move moveList;
     private Move last;
-    private int listSize = 0;
+    private int listSize;
 
     public MoveList() {
+        listSize = 0;
+        moveList = null;
     }
 
-    public void add(Move var1) {
-        if (this.moveList == null) {
-            this.moveList = var1;
-            this.last = var1;
-        } else {
-            this.last.setNext(var1);
-            this.last = var1;
+    public void add(Move move) {
+        if (this.moveList == null) { // First elem added
+            this.moveList = move;
+        } else { // Add to the end of list
+            this.last.setNext(move);
         }
-
-        ++this.listSize;
+        this.last = move;
+        listSize++;
     }
 
-    public void remove(Move var1) {
-        if (var1 == this.moveList) {
-            this.moveList = this.moveList.getNext();
-            --this.listSize;
-        } else {
-            MoveIter var2 = this.getIterator();
-            Move var3 = var2.next();
-            Move var4 = null;
+    public Move get(int index) throws IndexOutOfBoundsException {
+        int current = 0;
+        Move move = moveList;
+        while (current != index) {
+            move = move.getNext();
+            if (move == null) throw new IndexOutOfBoundsException();
+            current++;
+        }
+        return move;
+    }
 
-            while(var2.hasNext()) {
-                var4 = var2.next();
-                if (var1 == var4) {
-                    var3.setNext(var4.getNext());
-                    --this.listSize;
+    public MoveIter getIterator() {
+        return new MoveIter(this);
+    }
+
+    public MoveList copy() {
+        MoveIter iterator = getIterator();
+        MoveList newList = new MoveList();
+        while (iterator.hasNext())
+            newList.add(iterator.next().copy());
+        return newList;
+    }
+
+    // Availability to make another move
+    // by deleting previous
+    public void remove(Move lastMove) {
+        if (lastMove == moveList) {  // If first element
+            moveList = moveList.getNext();
+            listSize--;
+        } else {
+                MoveIter iterator = getIterator();
+                Move previous = iterator.next();    // previous move is first element
+                Move current;
+                while (iterator.hasNext()) {
+                    current = iterator.next();
+                    if (lastMove == current) {
+                        previous.setNext(current.getNext());
+                        listSize--;
+                    }
                 }
             }
-        }
-
     }
+
 
     public int size() {
         return this.listSize;
@@ -50,52 +78,20 @@ public class MoveList implements Serializable {
         return this.moveList;
     }
 
+    // Reset board to start new game
     public void reset() {
         this.listSize = 0;
         this.moveList = null;
     }
 
-    public Move get(int var1) throws IndexOutOfBoundsException {
-        int var2 = 0;
-
-        Move var3;
-        for(var3 = this.moveList; var2 != var1; ++var2) {
-            var3 = var3.getNext();
-            if (var3 == null) {
-                throw new IndexOutOfBoundsException();
-            }
-        }
-
-        return var3;
-    }
-
-    public MoveIter getIterator() {
-        return new MoveIter(this);
-    }
-
-    public MoveList copy() {
-        MoveIter var1 = this.getIterator();
-        MoveList var2 = new MoveList();
-
-        while(var1.hasNext()) {
-            var2.add(var1.next().copy());
-        }
-
-        return var2;
-    }
-
     public String toString() {
-        MoveIter var1 = this.getIterator();
-        String var2 = "Movelist: ";
-
-        while(var1.hasNext()) {
-            var2 = var2 + var1.next().toString();
-            if (var1.hasNext()) {
-                var2 = var2 + " , ";
-            }
+        MoveIter iterator = getIterator();
+        StringBuilder allMoves = new StringBuilder("All moves from list: ");
+        while (iterator.hasNext()) {
+            allMoves.append(iterator.next().toString());
+            if (iterator.hasNext()) allMoves.append(" , ");
         }
-
-        return var2;
+        return allMoves.toString();
     }
 }
 

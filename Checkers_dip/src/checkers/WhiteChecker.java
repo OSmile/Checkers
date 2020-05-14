@@ -1,44 +1,37 @@
 package checkers;
 
-import javax.swing.ImageIcon;
-
 public class WhiteChecker extends CheckerPosition {
-    public WhiteChecker(Coordinate var1) {
-        this.checkerState = new NormalStateWhite();
-        this.position = var1;
+    public WhiteChecker(Coordinate pos) {
+        this.checkerState = new StateWhite();
+        this.position = pos;
         this.value = 2;
-        this.stringRep = "O";
+        this.posToString = "O";
     }
 
     public int getColor() {
-        return 2;
-    }
-
-    public ImageIcon getIcon() {
-        return null;
+        return WHITE;
     }
 
     public void makeKing() {
         this.checkerState = new KingState();
         this.value = 3;
-        this.stringRep = "W";
+        this.posToString = "W";
     }
 
     public boolean kingRow() {
-        return this.position.get() >= 1 && this.position.get() <= 4;
+        return position.get() >= 1 && position.get() <= 4;
     }
 
     public boolean isKing() {
-        return this.value == 3;
+        return value == 3;
     }
 
     public CheckerPosition copy() {
-        WhiteChecker var1 = new WhiteChecker(this.position);
+        WhiteChecker newChecker = new WhiteChecker(this.position);
         if (this.value == 3) {
-            var1.makeKing();
+            newChecker.makeKing();
         }
-
-        return var1;
+        return newChecker;
     }
 }
 

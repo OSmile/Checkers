@@ -7,9 +7,6 @@ public abstract class Move implements Serializable {
     protected CheckerPosition checker;
     protected Move next = null;
 
-    public Move() {
-    }
-
     public abstract boolean isJump();
 
     public abstract String toString();
@@ -19,19 +16,22 @@ public abstract class Move implements Serializable {
     public abstract Move copy();
 
     public CheckerPosition getChecker() {
-        return this.checker;
+        return checker;
     }
 
     public Coordinate getDestination() {
-        return this.destination;
+        return destination;
     }
 
-    public void setNext(Move var1) {
-        this.next = var1;
+
+    // For the MoveList
+    public void setNext(Move next) {
+        this.next = next;
     }
 
+    // For the MoveList
     public Move getNext() {
-        return this.next;
+        return next;
     }
 }
 
