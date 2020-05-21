@@ -43,7 +43,6 @@ public class Coordinate implements Serializable {
         return "" + coordForChecker;
     }
 
-
     // Returns the coordinate of the field that is
     // one field above and one field to the left of previous state
     public Coordinate upLeftMove() {
@@ -59,8 +58,6 @@ public class Coordinate implements Serializable {
     }
 
     public Coordinate upRightMove() {
-        //System.out.println("Check");
-
         if (row() % 2 == 0) {
             return new Coordinate(coordForChecker - 4);
         } else {

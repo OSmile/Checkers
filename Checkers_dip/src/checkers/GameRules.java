@@ -111,9 +111,8 @@ public class GameRules {
 
     /**
      * Removes normal moves from movelist. This is necessary if the list
-     * contains jumps, since a jump is mandatory.
-     * A normal move should therefore
-     * not be considered if a jump exist.
+     * contains jumps, since jump is mandatory.
+     * A normal move should not be considered if jump exist.
      */
     private static void removeNormalMoves(MoveList movelist) {
         MoveList normalMoves = new MoveList();
@@ -157,7 +156,7 @@ public class GameRules {
         }
     }
 
-    // Returns a board that represents a +infinity score when evaluated.
+    // Returns a board with a +infinity score when evaluated
     public static Board plusInfinityBoard() {
         Board b = new Board();
         for (int i = 1; i < 33; i++) {
@@ -169,7 +168,7 @@ public class GameRules {
         return b;
     }
 
-    // Returns a board that represents a -infinity score when evaluated.
+    // Returns a board with a -infinity score when evaluated
     public static Board minusInfinityBoard() {
         Board b = new Board();
         for (int i = 1; i < 33; i++) {
@@ -181,82 +180,82 @@ public class GameRules {
         return b;
     }
 
-    public static boolean validCoordinate(Coordinate var0) {
-        return var0.get() >= 1 && var0.get() <= 32;
+    public static boolean validCoordinate(Coordinate coordinate) {
+        return coordinate.get() >= 1 && coordinate.get() <= 32;
     }
 
-    public static boolean validWhiteMove(Coordinate var0, Coordinate var1, Board var2) {
-        return validUpMove(var0, var1, var2) && var2.getChecker(var0).getColor() == 2;
+    public static boolean validWhiteMove(Coordinate from, Coordinate to, Board board) {
+        return validUpMove(from, to, board) && board.getChecker(from).getColor() == 2;
     }
 
-    public static boolean validBlackMove(Coordinate var0, Coordinate var1, Board var2) {
-        return validDownMove(var0, var1, var2) && var2.getChecker(var0).getColor() == 1;
+    public static boolean validBlackMove(Coordinate from, Coordinate to, Board board) {
+        return validDownMove(from, to, board) && board.getChecker(from).getColor() == 1;
     }
 
-    public static boolean validKingMove(Coordinate var0, Coordinate var1, Board var2) {
-        return validUpMove(var0, var1, var2) || validDownMove(var0, var1, var2);
+    public static boolean validKingMove(Coordinate from, Coordinate to, Board board) {
+        return validUpMove(from, to, board) || validDownMove(from, to, board);
     }
 
-    public static boolean validWhiteJump(Coordinate var0, Coordinate var1, Board var2) {
-        return validUpJump(var0, var1, 2, var2);
+    public static boolean validWhiteJump(Coordinate from, Coordinate to, Board board) {
+        return validUpJump(from, to, 2, board);
     }
 
-    public static boolean validBlackJump(Coordinate var0, Coordinate var1, Board var2) {
-        return validDownJump(var0, var1, 1, var2);
+    public static boolean validBlackJump(Coordinate from, Coordinate to, Board board) {
+        return validDownJump(from, to, 1, board);
     }
 
-    public static boolean validKingJump(Coordinate var0, Coordinate var1, Board var2) {
-        int var3 = var2.getChecker(var0).getColor();
-        return validUpJump(var0, var1, var3, var2) || validDownJump(var0, var1, var3, var2);
+    public static boolean validKingJump(Coordinate from, Coordinate to, Board board) {
+        int color = board.getChecker(from).getColor();
+        return validUpJump(from, to, color, board) || validDownJump(from, to, color, board);
     }
 
-    private static boolean validUpMove(Coordinate var0, Coordinate var1, Board var2) {
-        return validCoordinate(var0) && validCoordinate(var1)
-                && var2.availableCoordinate(var1)
-                && !var2.availableCoordinate(var0)
-                && var0.row() - var1.row() == 1
-                && (var0.upLeftMove().equals(var1) || var0.upRightMove().equals(var1));
+    private static boolean validUpMove(Coordinate from, Coordinate to, Board board) {
+        return validCoordinate(from) && validCoordinate(to)
+                && board.availableCoordinate(to)
+                && !board.availableCoordinate(from)
+                && from.row() - to.row() == 1
+                && (from.upLeftMove().equals(to) || from.upRightMove().equals(to));
     }
 
-    private static boolean validDownMove(Coordinate var0, Coordinate var1, Board var2) {
-        return validCoordinate(var0) && validCoordinate(var1)
-                && var2.availableCoordinate(var1)
-                && !var2.availableCoordinate(var0)
-                && var1.row() - var0.row() == 1
-                && (var0.downLeftMove().equals(var1) || var0.downRightMove().equals(var1));
+    private static boolean validDownMove(Coordinate from, Coordinate to, Board board) {
+        return validCoordinate(from) && validCoordinate(to)
+                && board.availableCoordinate(to)
+                && !board.availableCoordinate(from)
+                && to.row() - from.row() == 1
+                && (from.downLeftMove().equals(to) || from.downRightMove().equals(to));
     }
 
-    private static boolean validUpJump(Coordinate var0, Coordinate var1, int var2, Board var3) {
-        boolean var4 = validCoordinate(var0) && validCoordinate(var1)
-                && var3.availableCoordinate(var1)
-                && !var3.availableCoordinate(var0)
-                && var3.getChecker(var0).getColor() == var2
-                && var0.row() - var1.row() == 2;
-        if (!var4) {
+    private static boolean validUpJump(Coordinate from, Coordinate to, int color, Board board) {
+        boolean b = validCoordinate(from) && validCoordinate(to)
+                && board.availableCoordinate(to)
+                && !board.availableCoordinate(from)
+                && board.getChecker(from).getColor() == color
+                && from.row() - to.row() == 2;
+        if (!b) {
             return false;
-        } else if (var0.upLeftJump().equals(var1)) {
-            return !var3.availableCoordinate(var0.upLeftMove()) && var3.getChecker(var0.upLeftMove()).getColor() == opponent(var2);
-        } else if (!var0.upRightJump().equals(var1)) {
+        } else if (from.upLeftJump().equals(to)) {
+            return !board.availableCoordinate(from.upLeftMove()) && board.getChecker(from.upLeftMove()).getColor() == opponent(color);
+        } else if (!from.upRightJump().equals(to)) {
             return false;
         } else {
-            return !var3.availableCoordinate(var0.upRightMove()) && var3.getChecker(var0.upRightMove()).getColor() == opponent(var2);
+            return !board.availableCoordinate(from.upRightMove()) && board.getChecker(from.upRightMove()).getColor() == opponent(color);
         }
     }
 
-    private static boolean validDownJump(Coordinate var0, Coordinate var1, int var2, Board var3) {
-        boolean var4 = validCoordinate(var0) && validCoordinate(var1)
-                && var3.availableCoordinate(var1)
-                && !var3.availableCoordinate(var0)
-                && var3.getChecker(var0).getColor() == var2
-                && var1.row() - var0.row() == 2;
-        if (!var4) {
+    private static boolean validDownJump(Coordinate from, Coordinate to, int color, Board board) {
+        boolean b = validCoordinate(from) && validCoordinate(to)
+                && board.availableCoordinate(to)
+                && !board.availableCoordinate(from)
+                && board.getChecker(from).getColor() == color
+                && to.row() - from.row() == 2;
+        if (!b) {
             return false;
-        } else if (var0.downLeftJump().equals(var1)) {
-            return !var3.availableCoordinate(var0.downLeftMove()) && var3.getChecker(var0.downLeftMove()).getColor() == opponent(var2);
-        } else if (!var0.downRightJump().equals(var1)) {
+        } else if (from.downLeftJump().equals(to)) {
+            return !board.availableCoordinate(from.downLeftMove()) && board.getChecker(from.downLeftMove()).getColor() == opponent(color);
+        } else if (!from.downRightJump().equals(to)) {
             return false;
         } else {
-            return !var3.availableCoordinate(var0.downRightMove()) && var3.getChecker(var0.downRightMove()).getColor() == opponent(var2);
+            return !board.availableCoordinate(from.downRightMove()) && board.getChecker(from.downRightMove()).getColor() == opponent(color);
         }
     }
 }

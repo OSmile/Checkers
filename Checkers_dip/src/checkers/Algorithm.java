@@ -5,7 +5,7 @@ import static checkers.GameRules.*;
 public class Algorithm {
     /**
      * "Minimax with alpha-beta" & Minimax algorithms to find the best move
-     * for a opponent
+     * for an opponent and player
      */
 
     public static Board minimaxAB(Board board, int recursion, int player,
@@ -35,7 +35,7 @@ public class Algorithm {
                             alpha, beta);
                     alpha = maxBoard(alpha, nextBoard);
                     if (alpha.evaluate() >= beta.evaluate()) {
-                        return beta; //Cutoff. Return the best solution so far.
+                        return beta; //Return the best solution
                     }
                 }
                 return alpha;

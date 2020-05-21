@@ -89,7 +89,7 @@ public class MoveList implements Serializable {
         StringBuilder allMoves = new StringBuilder("All moves from list: ");
         while (iterator.hasNext()) {
             allMoves.append(iterator.next().toString());
-            if (iterator.hasNext()) allMoves.append(" , ");
+            if (iterator.hasNext()) allMoves.append(", ");
         }
         return allMoves.toString();
     }

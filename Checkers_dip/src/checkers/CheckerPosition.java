@@ -29,8 +29,8 @@ public abstract class CheckerPosition extends Position implements Serializable {
         return this.position;
     }
 
-    public void setPosition(Coordinate var1) {
-        this.position = var1;
+    public void setPosition(Coordinate coordinate) {
+        this.position = coordinate;
     }
 
     public int getValue() {

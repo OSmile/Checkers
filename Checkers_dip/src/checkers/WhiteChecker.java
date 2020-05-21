@@ -2,7 +2,7 @@ package checkers;
 
 public class WhiteChecker extends CheckerPosition {
     public WhiteChecker(Coordinate pos) {
-        this.checkerState = new StateWhite();
+        this.checkerState = new WhiteState();
         this.position = pos;
         this.value = 2;
         this.posToString = "O";

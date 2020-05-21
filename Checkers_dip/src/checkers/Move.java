@@ -11,7 +11,7 @@ public abstract class Move implements Serializable {
 
     public abstract String toString();
 
-    public abstract Move copy(Board var1);
+    public abstract Move copy(Board board);
 
     public abstract Move copy();
 
