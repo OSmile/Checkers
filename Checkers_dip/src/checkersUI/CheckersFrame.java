@@ -3,11 +3,7 @@ package checkersUI;
 import checkers.*;
 
 import java.awt.Point;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
 
@@ -27,7 +23,7 @@ public class CheckersFrame extends JFrame implements MouseListener, MouseMotionL
     private boolean isBack = false;
     String output = "";
     int currentPositionInBoardHistory = 0;
-    static int algorithm = 1;
+    static int algorithm = 2;
     JMenuBar menuBar;
 
     public CheckersFrame() {
@@ -57,28 +53,28 @@ public class CheckersFrame extends JFrame implements MouseListener, MouseMotionL
             System.out.println("miniMax");
             CheckersFrame.algorithm = 1;
         });
-        /*JRadioButtonMenuItem minimaxABButton = new JRadioButtonMenuItem("MiniMaxAB");
+        JRadioButtonMenuItem minimaxABButton = new JRadioButtonMenuItem("MiniMaxAB");
         minimaxABButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent algorithm) {
                 System.out.println("miniMaxAB");
                 CheckersFrame.algorithm = 2;
             }
-        });*/
+        });
 
         // Add to the group to check only one
         algorithmGroup.add(minimaxButton);
-        //algorithmGroup.add(minimaxABButton);
+        algorithmGroup.add(minimaxABButton);
 
         if (CheckersFrame.algorithm == 1) {
             minimaxButton.setSelected(true);
-            //    minimaxABButton.setSelected(false);
+            minimaxABButton.setSelected(false);
         } else {
             minimaxButton.setSelected(false);
-            //   minimaxABButton.setSelected(true);
+            minimaxABButton.setSelected(true);
         }
 
         algorithm.add(minimaxButton);
-        //algorithm.add(minimaxABButton);
+        algorithm.add(minimaxABButton);
 
         // Add algo to menuBar
         menuBar.add(algorithm);
