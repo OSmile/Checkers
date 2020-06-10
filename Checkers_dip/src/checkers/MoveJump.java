@@ -38,13 +38,14 @@ public class MoveJump extends Move {
 
     public String toString() {
         String logging;
+
         if (checker.getColor() == 1) {
             logging = "Black is Jump:";
         } else {
             logging = "White is Jump:";
         }
 
-        logging = logging + "(" + checker.getPosition() + " " + destination + ")";
+        logging = logging + "(" + checker.getPosition() + " -> " + destination + ")";
         return logging;
     }
 }

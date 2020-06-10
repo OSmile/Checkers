@@ -54,11 +54,9 @@ public class CheckersFrame extends JFrame implements MouseListener, MouseMotionL
             CheckersFrame.algorithm = 1;
         });
         JRadioButtonMenuItem minimaxABButton = new JRadioButtonMenuItem("MiniMaxAB");
-        minimaxABButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent algorithm) {
-                System.out.println("miniMaxAB");
-                CheckersFrame.algorithm = 2;
-            }
+        minimaxABButton.addActionListener(algorithm1 -> {
+            System.out.println("miniMaxAB");
+            CheckersFrame.algorithm = 2;
         });
 
         // Add to the group to check only one
@@ -396,7 +394,7 @@ public class CheckersFrame extends JFrame implements MouseListener, MouseMotionL
             pan.boardInit.getHistory().reset();
             Board board = null;
             if (algorithm == 2) {
-                board = Algorithm.minimaxAB(pan.boardInit, thinkDepth, computerColor, GameRules.minusInfinityBoard(), GameRules.plusInfinityBoard());
+                board = Algorithm.minimaxAB(pan.boardInit, thinkDepth, computerColor, GameRules.allBlackKingsOnABoard(), GameRules.allWhiteKingsOnABoard());
             }
 
             if (algorithm == 1) {

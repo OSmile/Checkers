@@ -106,25 +106,5 @@ public class Board implements Serializable {
     }
 
 
-    public String toString() {
-        String[][] drawBoard = new String[8][8];
-        Coordinate temp;
-        for (int i = 1;i < 33; i++) {
-            temp = new Coordinate(i);
-            if (getChecker(temp) != null)
-                drawBoard[temp.column()][temp.row()] = getChecker(temp).toString();
-        }
-        StringBuilder s = new StringBuilder(" +---+---+---+---+---+---+---+---+\n ");
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                if (drawBoard[x][y] != null)
-                    s.append("| ").append(drawBoard[x][y]).append(" ");
-                else
-                    s.append("|   ");
-            }
-            s.append("| (").append((y * 4) + 1).append("-").append((y * 4) + 4).append(")");
-            s.append("\n +---+---+---+---+---+---+---+---+\n ");
-        }
-        return s.toString();
-    }
+
 }

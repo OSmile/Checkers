@@ -59,15 +59,5 @@ public class BoardList {
         return bestBoard;
     }
 
-    public String toString() {
-        BoardIter iterator = getIterator();
-        StringBuilder boardList = new StringBuilder("BoardList: ");
-        while (iterator.hasNext()) {
-            boardList.append(iterator.next().toString());
-            if (iterator.hasNext()) {
-                boardList.append(" , ");
-            }
-        }
-        return boardList.toString();
-    }
+
 }

@@ -2,7 +2,7 @@ package checkers;
 
 import java.io.Serializable;
 
-public abstract class CheckerPosition extends Position implements Serializable {
+public abstract class CheckerPosition implements Serializable {
     public static final int BLACK = 1;
     public static final int WHITE = 2;
 

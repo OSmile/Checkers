@@ -21,14 +21,16 @@ public class OnlyMove extends Move {
     }
 
     public String toString() {
-        String whichMove;
+        String whichMove = "";
+        System.out.println(checker.getColor());
         if (this.checker.getColor() == 1) {
             whichMove = "Black is moving:";
-        } else {
+        }
+        if (checker.getColor() == 2){
             whichMove = "White is moving:";
         }
 
-        whichMove = whichMove + "(" + checker.getPosition() + " " + destination + ")";
+        whichMove = whichMove + ("(" + checker.getPosition() + " -> " + destination + ")");
         return whichMove;
     }
 }

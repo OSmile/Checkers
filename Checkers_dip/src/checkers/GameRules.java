@@ -156,8 +156,8 @@ public class GameRules {
         }
     }
 
-    // Returns a board with a +infinity score when evaluated
-    public static Board plusInfinityBoard() {
+    // Returns a board with all white kings score (remember that white king = 3)
+    public static Board allWhiteKingsOnABoard() {
         Board b = new Board();
         for (int i = 1; i < 33; i++) {
             Coordinate c = new Coordinate(i);
@@ -168,8 +168,8 @@ public class GameRules {
         return b;
     }
 
-    // Returns a board with a -infinity score when evaluated
-    public static Board minusInfinityBoard() {
+    // Returns a board with all black kings score (remember that black king = -3)
+    public static Board allBlackKingsOnABoard() {
         Board b = new Board();
         for (int i = 1; i < 33; i++) {
             Coordinate c = new Coordinate(i);
